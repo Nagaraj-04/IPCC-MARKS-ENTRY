@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Upload CSV</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h2>Upload CSV File</h2>
+
+  <form id="csvForm">
+    <input type="file" id="csvFile" name="csvFile" accept=".csv" required />
+    <button type="submit">Upload</button>
+  </form>
+
+  <div id="messageContainer"></div>
+  <div id="nextButtonContainer"></div>
+
+  <script>
+    const form = document.getElementById('csvForm');
+    const messageDiv = document.getElementById('messageContainer');
+    const nextBtnContainer = document.getElementById('nextButtonContainer');
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const formData = new FormData(form);
+
+      fetch('http://localhost:5000/uploads', {
+        method: 'POST',
+        body: formData
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.message) {
+          messageDiv.innerHTML = `<div class="message success">${data.message}</div>`;
+          nextBtnContainer.innerHTML = `<button onclick="goToMarks()">Next</button>`;
+        }
+      })
+      .catch(err => {
+        messageDiv.innerHTML = `<div class="message error">Error: ${err.message}</div>`;
+      });
+    });
+
+    function goToMarks() {
+      window.location.href = "enter-marks.html";
+    }
+  </script>
+</body>
+</html>

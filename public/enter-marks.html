@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Enter Marks</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h2>Enter Student Marks</h2>
+  <div id="student-container"></div>
+
+  <div id="navigation-buttons">
+    <button onclick="goBack()" id="backBtn">Back</button>
+    <button onclick="nextStudent()" id="nextBtn">Next Student</button>
+    <button onclick="submitMarks()" id="submitBtn" style="display: none;">Submit</button>
+  </div>
+
+  <script>
+    let students = [];
+    let currentIndex = 0;
+
+    fetch('/api/students')
+      .then(res => res.json())
+      .then(data => {
+        students = data;
+        renderStudent();
+      });
+
+    function renderStudent() {
+      const container = document.getElementById('student-container');
+      const student = students[currentIndex];
+
+      container.innerHTML = `
+        <h3><strong>${student.name}</strong></h3>
+        <p>USN: ${student.usn}</p>
+        <form id="marksForm">
+          <label>CIA 1: <input type="number" name="cia1" required /></label><br />
+          <label>CIA 2: <input type="number" name="cia2" required /></label><br />
+          <label>CIA 3: <input type="number" name="cia3" required /></label><br />
+          <label>AAT: <input type="number" name="aat" required /></label><br />
+          <label>Quiz: <input type="number" name="quiz" required /></label><br />
+          <label>Lab: <input type="number" name="lab" required /></label>
+        </form>
+      `;
+
+      document.getElementById('backBtn').style.display = currentIndex > 0 ? 'inline' : 'none';
+      document.getElementById('nextBtn').style.display = currentIndex < students.length - 1 ? 'inline' : 'none';
+      document.getElementById('submitBtn').style.display = currentIndex === students.length - 1 ? 'inline' : 'none';
+    }
+
+    function nextStudent() {
+      if (validateForm()) {
+        saveMarks();
+        currentIndex++;
+        renderStudent();
+      }
+    }
+
+    function goBack() {
+      currentIndex--;
+      renderStudent();
+    }
+
+    function validateForm() {
+      const form = document.getElementById('marksForm');
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return false;
+      }
+      return true;
+    }
+
+    function saveMarks() {
+      const formData = new FormData(document.getElementById('marksForm'));
+      const marks = Object.fromEntries(formData.entries());
+      students[currentIndex] = { ...students[currentIndex], ...marks };
+    }
+
+    function submitMarks() {
+      if (validateForm()) {
+        saveMarks();
+
+        fetch('/api/save-marks', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(students)
+        })
+        .then(res => res.json())
+        .then(data => {
+          alert(data.message);
+          window.location.href = 'index.html';
+        })
+        .catch(err => alert('Error saving marks.'));
+      }
+    }
+  </script>
+</body>
+</html>

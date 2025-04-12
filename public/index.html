@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>IPCC Subject Entry</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h2>IPCC Subject Marks Entry</h2>
+
+    <div id="step1">
+      <label>Enter Subject Code:</label>
+      <input type="text" id="subjectCode" placeholder="e.g. IPCC401" />
+      <button onclick="validateCode()">Next</button>
+      <div id="codeError" class="error"></div>
+    </div>
+
+    <div id="step2" class="hidden">
+      <label>Enter Semester:</label>
+      <input type="text" id="semester" placeholder="e.g. 5"/>
+      <label>Enter Section:</label>
+      <input type="text" id="section" placeholder="e.g. A"/>
+      <button onclick="goToUpload()">Continue</button>
+    </div>
+  </div>
+
+  <script>
+    function validateCode() {
+      const code = document.getElementById("subjectCode").value.trim();
+      const error = document.getElementById("codeError");
+      if (!code.startsWith("IPCC")) {
+        error.textContent = "Subject code must start with 'IPCC'.";
+        return;
+      }
+      error.textContent = "";
+      document.getElementById("step1").classList.add("hidden");
+      document.getElementById("step2").classList.remove("hidden");
+    }
+
+    function goToUpload() {
+      window.location.href = "upload.html";
+    }
+  </script>
+</body>
+</html>
