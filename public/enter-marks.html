@@ -1,98 +1,198 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Enter Marks</title>
-  <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8">
+    <title>Enter Marks</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f9f9f9;
+        }
+
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 500px;
+            margin: auto;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        .student-info {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        label {
+            display: block;
+            margin-top: 10px;
+            font-weight: 500;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            margin-top: 4px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .buttons {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        button {
+            padding: 10px 15px;
+            font-size: 14px;
+            border: none;
+            background: #007BFF;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: #28a745;
+            margin-top: 10px;
+        }
+    </style>
 </head>
 <body>
-  <h2>Enter Student Marks</h2>
-  <div id="student-container"></div>
 
-  <div id="navigation-buttons">
-    <button onclick="goBack()" id="backBtn">Back</button>
-    <button onclick="nextStudent()" id="nextBtn">Next Student</button>
-    <button onclick="submitMarks()" id="submitBtn" style="display: none;">Submit</button>
-  </div>
+<div class="container">
+    <h2>Enter Marks</h2>
+    <div id="student-info" class="student-info">Loading student...</div>
 
-  <script>
+    <label for="cia1">CIA 1:</label>
+    <input type="number" id="cia1" placeholder="Out of 50">
+
+    <label for="cia2">CIA 2:</label>
+    <input type="number" id="cia2" placeholder="Out of 50">
+
+    <label for="cia3">CIA 3:</label>
+    <input type="number" id="cia3" placeholder="Out of 50">
+
+    <label for="aat">AAT:</label>
+    <input type="number" id="aat" placeholder="Out of 10">
+
+    <label for="quiz">Quiz:</label>
+    <input type="number" id="quiz" placeholder="Out of 30">
+
+    <label for="lab">Lab:</label>
+    <input type="number" id="lab" placeholder="Out of 20">
+
+    <div class="buttons">
+        <button id="backBtn">Back</button>
+        <button id="nextBtn">Next Student</button>
+    </div>
+
+    <button id="submitBtn" class="submit-btn">Submit All Marks</button>
+</div>
+
+<script>
     let students = [];
     let currentIndex = 0;
+    let marksData = [];
 
-    fetch('/api/students')
-      .then(res => res.json())
-      .then(data => {
-        students = data;
-        renderStudent();
-      });
+    function loadStudent() {
+        if (students.length === 0) return;
+        const student = students[currentIndex];
+        document.getElementById('student-info').innerText = `Name: ${student.name} | USN: ${student.usn}`;
 
-    function renderStudent() {
-      const container = document.getElementById('student-container');
-      const student = students[currentIndex];
-
-      container.innerHTML = `
-        <h3><strong>${student.name}</strong></h3>
-        <p>USN: ${student.usn}</p>
-        <form id="marksForm">
-          <label>CIA 1: <input type="number" name="cia1" required /></label><br />
-          <label>CIA 2: <input type="number" name="cia2" required /></label><br />
-          <label>CIA 3: <input type="number" name="cia3" required /></label><br />
-          <label>AAT: <input type="number" name="aat" required /></label><br />
-          <label>Quiz: <input type="number" name="quiz" required /></label><br />
-          <label>Lab: <input type="number" name="lab" required /></label>
-        </form>
-      `;
-
-      document.getElementById('backBtn').style.display = currentIndex > 0 ? 'inline' : 'none';
-      document.getElementById('nextBtn').style.display = currentIndex < students.length - 1 ? 'inline' : 'none';
-      document.getElementById('submitBtn').style.display = currentIndex === students.length - 1 ? 'inline' : 'none';
+        const saved = marksData[currentIndex] || {};
+        document.getElementById('cia1').value = saved.cia1 || '';
+        document.getElementById('cia2').value = saved.cia2 || '';
+        document.getElementById('cia3').value = saved.cia3 || '';
+        document.getElementById('aat').value = saved.aat || '';
+        document.getElementById('quiz').value = saved.quiz || '';
+        document.getElementById('lab').value = saved.lab || '';
     }
 
-    function nextStudent() {
-      if (validateForm()) {
-        saveMarks();
-        currentIndex++;
-        renderStudent();
-      }
+    function saveCurrentMarks() {
+        if (!students[currentIndex]) return;
+
+        marksData[currentIndex] = {
+            name: students[currentIndex].name,
+            usn: students[currentIndex].usn,
+            cia1: document.getElementById('cia1').value,
+            cia2: document.getElementById('cia2').value,
+            cia3: document.getElementById('cia3').value,
+            aat: document.getElementById('aat').value,
+            quiz: document.getElementById('quiz').value,
+            lab: document.getElementById('lab').value,
+        };
     }
 
-    function goBack() {
-      currentIndex--;
-      renderStudent();
-    }
+    document.getElementById('nextBtn').addEventListener('click', () => {
+        saveCurrentMarks();
+        if (currentIndex < students.length - 1) {
+            currentIndex++;
+            loadStudent();
+        } else {
+            alert('This is the last student.');
+        }
+    });
 
-    function validateForm() {
-      const form = document.getElementById('marksForm');
-      if (!form.checkValidity()) {
-        form.reportValidity();
-        return false;
-      }
-      return true;
-    }
+    document.getElementById('backBtn').addEventListener('click', () => {
+        saveCurrentMarks();
+        if (currentIndex > 0) {
+            currentIndex--;
+            loadStudent();
+        } else {
+            alert('This is the first student.');
+        }
+    });
 
-    function saveMarks() {
-      const formData = new FormData(document.getElementById('marksForm'));
-      const marks = Object.fromEntries(formData.entries());
-      students[currentIndex] = { ...students[currentIndex], ...marks };
-    }
-
-    function submitMarks() {
-      if (validateForm()) {
-        saveMarks();
+    document.getElementById('submitBtn').addEventListener('click', () => {
+        saveCurrentMarks();
 
         fetch('/api/save-marks', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(students)
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(marksData)
         })
-        .then(res => res.json())
+        .then(response => response.json())
         .then(data => {
-          alert(data.message);
-          window.location.href = 'index.html';
+            alert(data.message || 'Marks saved successfully.');
         })
-        .catch(err => alert('Error saving marks.'));
-      }
-    }
-  </script>
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error saving marks.');
+        });
+    });
+
+    fetch('/api/students')
+        .then(response => response.json())
+        .then(data => {
+            students = data;
+            if (students.length > 0) {
+                loadStudent();
+            } else {
+                document.getElementById('student-info').innerText = 'No students found.';
+            }
+        })
+        .catch(error => {
+            console.error('Error loading students:', error);
+            document.getElementById('student-info').innerText = 'Error loading students.';
+        });
+</script>
+
 </body>
 </html>
