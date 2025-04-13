@@ -104,6 +104,8 @@
     </div>
 
     <button id="submitBtn" class="submit-btn">Submit All Marks</button>
+    <button id="downloadBtn" class="submit-btn" style="background:#ffc107; margin-top: 10px;">Download CSV File</button>
+
 </div>
 
 <script>
@@ -192,6 +194,9 @@
             console.error('Error loading students:', error);
             document.getElementById('student-info').innerText = 'Error loading students.';
         });
+        document.getElementById('downloadBtn').addEventListener('click', () => {
+    window.location.href = 'http://localhost:5000/download';
+});
 </script>
 
 </body>

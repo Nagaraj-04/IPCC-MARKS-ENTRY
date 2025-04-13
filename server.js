@@ -76,23 +76,94 @@ app.get('/api/students', (req, res) => {
 // Save marks back to CSV
 app.post('/api/save-marks', (req, res) => {
   const studentsWithMarks = req.body;
-  const fields = ['name', 'usn', 'cia1', 'cia2', 'cia3', 'aat', 'quiz', 'lab'];
-  const csvData = parse(studentsWithMarks, { fields });
+
+  const updatedMarks = studentsWithMarks.map(student => {
+    // Convert values safely to numbers or default to 0
+    const cia1 = +student.cia1 || 0;
+    const cia2 = +student.cia2 || 0;
+    const cia3 = +student.cia3 || 0;
+    const aat = +student.aat || 0;
+    const quiz = +student.quiz || 0;
+    const lab = +student.lab || 0;
+
+    // Reduced scores
+    const cia1Reduced = Math.round((cia1 / 50) * 10);
+    const cia2Reduced = Math.round((cia2 / 50) * 10);
+    const cia3Reduced = Math.round((cia3 / 50) * 10);
+    const quizReduced = Math.round((quiz / 30) * 10);
+
+    // Combined out of 50
+    const combinedOutOf50 = cia1Reduced + cia2Reduced + cia3Reduced + aat + quizReduced;
+
+    // Final reduced out of 30
+    const finalReduced = Math.round((combinedOutOf50 / 50) * 30 * 100) / 100; // rounded to 2 decimals
+
+    // Total marks out of 50
+    const totalMarksOutOf50 = finalReduced + lab;
+
+    // Grand total (whole number)
+    const grandTotal = Math.round(totalMarksOutOf50);
+
+    return {
+      ...student,
+      cia1_out_of_10: cia1Reduced,
+      cia2_out_of_10: cia2Reduced,
+      cia3_out_of_10: cia3Reduced,
+      quiz_out_of_10: quizReduced,
+      combined_out_of_50: combinedOutOf50,
+      final_reduced_out_of_30: finalReduced,
+      total_marks_out_of_50: totalMarksOutOf50,
+      grand_total: grandTotal
+    };
+  });
+
+  const fields = [
+    'name', 'usn',
+    'cia1', 'cia1_out_of_10',
+    'cia2', 'cia2_out_of_10',
+    'cia3', 'cia3_out_of_10',
+    'aat', 'quiz', 'quiz_out_of_10',
+    'combined_out_of_50',
+    'final_reduced_out_of_30',
+    'lab',
+    'total_marks_out_of_50',
+    'grand_total'
+  ];
+
+  const csvData = parse(updatedMarks, { fields });
 
   fs.writeFile(path.join(__dirname, 'uploads', 'student.csv'), csvData, (err) => {
     if (err) {
       console.error("Error saving marks:", err);
       return res.status(500).json({ message: 'Error saving marks.' });
     }
-    console.log(`✅ Marks saved for ${studentsWithMarks.length} students.`);
-    res.json({ message: 'Marks saved successfully.' });
+    console.log(`✅ All marks calculated and saved for ${updatedMarks.length} students.`);
+    res.json({ message: 'Marks saved with all calculated fields.' });
   });
 });
+
+// Route to download the updated student CSV
+app.get('/download', (req, res) => {
+  const filePath = path.join(__dirname, 'uploads', 'student.csv');
+
+  if (fs.existsSync(filePath)) {
+    res.download(filePath, 'student_marks.csv', (err) => {
+      if (err) {
+        console.error('❌ Error sending file:', err);
+        res.status(500).send('Error downloading the file.');
+      }
+    });
+  } else {
+    res.status(404).send('File not found.');
+  }
+});
+
 
 // Catch-all route for undefined endpoints
 app.use((req, res) => {
   res.status(404).json({ message: 'Route not found.' });
 });
+
 
 // Start server
 app.listen(PORT, () => {

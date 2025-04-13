@@ -20,6 +20,7 @@
     "multer"
   ],
   "dependencies": {
+    "body-parser": "^2.2.0",
     "cors": "^2.8.5",
     "csv-parser": "^3.2.0",
     "express": "^5.1.0",
