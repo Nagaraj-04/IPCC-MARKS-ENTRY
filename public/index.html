@@ -3,7 +3,110 @@
 <head>
   <meta charset="UTF-8">
   <title>IPCC Subject Entry</title>
-  <link rel="stylesheet" href="style.css">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right top, #74ebd5, #acb6e5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      padding: 30px 40px;
+      border-radius: 20px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      width: 100%;
+      max-width: 420px;
+      color: #fff;
+      animation: fadeIn 0.5s ease-in-out;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 25px;
+      font-size: 24px;
+      font-weight: 600;
+    }
+
+    label {
+      margin-top: 15px;
+      display: block;
+      font-weight: 500;
+      font-size: 14px;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px 14px;
+      margin-top: 5px;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      outline: none;
+      background-color: rgba(255, 255, 255, 0.9);
+      color: #333;
+      transition: 0.3s ease;
+    }
+
+    input:focus {
+      box-shadow: 0 0 0 2px #ffffffaa;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 25px;
+      padding: 12px;
+      font-size: 16px;
+      font-weight: bold;
+      background: linear-gradient(to right, #4facfe, #00f2fe);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s ease-in-out;
+    }
+
+    button:hover {
+      background: linear-gradient(to right, #43e97b, #38f9d7);
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .error {
+      color: #ffcccb;
+      margin-top: 10px;
+      font-size: 13px;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-15px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 25px 20px;
+      }
+    }
+  </style>
 </head>
 <body>
   <div class="container">
@@ -17,11 +120,14 @@
     </div>
 
     <div id="step2" class="hidden">
-      <label>Enter Semester:</label>
-      <input type="text" id="semester" placeholder="e.g. 5"/>
-      <label>Enter Section:</label>
-      <input type="text" id="section" placeholder="e.g. A"/>
+      <label>Enter Semester (1 to 8):</label>
+      <input type="number" id="semester" placeholder="e.g. 5" min="1" max="8" />
+
+      <label>Enter Section (A-Z):</label>
+      <input type="text" id="section" placeholder="e.g. A" maxlength="1" />
+
       <button onclick="goToUpload()">Continue</button>
+      <div id="step2Error" class="error"></div>
     </div>
   </div>
 
@@ -29,16 +135,45 @@
     function validateCode() {
       const code = document.getElementById("subjectCode").value.trim();
       const error = document.getElementById("codeError");
+
+      if (code === "") {
+        error.textContent = "Please enter a subject code.";
+        return;
+      }
+
       if (!code.startsWith("IPCC")) {
         error.textContent = "Subject code must start with 'IPCC'.";
         return;
       }
+
       error.textContent = "";
       document.getElementById("step1").classList.add("hidden");
       document.getElementById("step2").classList.remove("hidden");
     }
 
     function goToUpload() {
+      const semester = document.getElementById("semester").value.trim();
+      const section = document.getElementById("section").value.trim().toUpperCase();
+      const error = document.getElementById("step2Error");
+
+      if (!semester || !section) {
+        error.textContent = "Please fill in all required fields.";
+        return;
+      }
+
+      const semNum = parseInt(semester);
+      if (isNaN(semNum) || semNum < 1 || semNum > 8) {
+        error.textContent = "Semester must be a number between 1 and 8.";
+        return;
+      }
+
+      if (!/^[A-Z]$/i.test(section)) {
+        error.textContent = "Section must be a single alphabet character.";
+        return;
+      }
+
+      error.textContent = "";
+      // Proceed to upload.html
       window.location.href = "upload.html";
     }
   </script>
