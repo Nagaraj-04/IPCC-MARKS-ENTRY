@@ -127,14 +127,21 @@
     const messageDiv = document.getElementById('messageContainer');
     const nextBtnContainer = document.getElementById('nextButtonContainer');
 
+<<<<<<< HEAD
     // Get the base URL from the current window location
     const baseURL = window.location.origin;
 
+=======
+>>>>>>> 8b603eb817f5da8eef7deb71c887be2f525e3af6
     form.addEventListener('submit', function(e) {
       e.preventDefault();
       const formData = new FormData(form);
 
+<<<<<<< HEAD
       fetch(`${baseURL}/uploads`, {
+=======
+      fetch('http://localhost:5000/uploads', {
+>>>>>>> 8b603eb817f5da8eef7deb71c887be2f525e3af6
         method: 'POST',
         body: formData
       })

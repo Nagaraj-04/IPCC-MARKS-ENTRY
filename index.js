@@ -5,11 +5,15 @@ const fs = require('fs');
 const path = require('path');
 const csv = require('csv-parser');
 const { parse } = require('json2csv');
+<<<<<<< HEAD
 const os = require('os');
+=======
+>>>>>>> 8b603eb817f5da8eef7deb71c887be2f525e3af6
 
 const app = express();
 const PORT = 5000;
 
+<<<<<<< HEAD
 // Get local IP address
 function getLocalIP() {
   const interfaces = os.networkInterfaces();
@@ -24,6 +28,8 @@ function getLocalIP() {
   return 'localhost';
 }
 
+=======
+>>>>>>> 8b603eb817f5da8eef7deb71c887be2f525e3af6
 app.use(cors());
 app.use(express.static('public'));
 app.use(express.json());
@@ -181,9 +187,14 @@ app.use((req, res) => {
 
 
 // Start server
+<<<<<<< HEAD
 app.listen(PORT, '0.0.0.0', () => {
   const localIP = getLocalIP();
   console.log(`🚀 Server is running on:`);
   console.log(`- Local: http://localhost:${PORT}`);
   console.log(`- Network: http://${localIP}:${PORT}`);
+=======
+app.listen(PORT, () => {
+  console.log(`🚀 Server is running on http://localhost:${PORT}`);
+>>>>>>> 8b603eb817f5da8eef7deb71c887be2f525e3af6
 });
