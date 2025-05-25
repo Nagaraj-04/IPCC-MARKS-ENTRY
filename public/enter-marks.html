@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Enter Marks</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #74ebd5, #acb6e5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      padding: 30px 40px;
+      border-radius: 20px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      width: 100%;
+      max-width: 500px;
+      color: #fff;
+      animation: fadeIn 0.4s ease;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 25px;
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .student-info {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: 500;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      outline: none;
+      background: rgba(255, 255, 255, 0.9);
+      color: #333;
+    }
+
+    .buttons {
+      margin-top: 20px;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    button {
+      padding: 12px;
+      font-size: 15px;
+      font-weight: bold;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      flex: 1;
+      transition: all 0.3s ease;
+    }
+
+    .submit-btn {
+      width: 100%;
+      margin-top: 15px;
+      background: linear-gradient(to right, #28a745, #63d471);
+      color: white;
+    }
+
+    .csv-btn {
+      background: linear-gradient(to right, #ffc107, #ffdd57);
+      color: black;
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 25px 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>Enter Marks</h2>
+  <div id="student-info" class="student-info">Loading student...</div>
+
+  <label for="cia1">CIA 1:</label>
+  <input type="number" id="cia1" placeholder="Out of 50" min="0" max="50">
+
+  <label for="cia2">CIA 2:</label>
+  <input type="number" id="cia2" placeholder="Out of 50" min="0" max="50">
+
+  <label for="cia3">CIA 3:</label>
+  <input type="number" id="cia3" placeholder="Out of 50" min="0" max="50">
+
+  <label for="aat">AAT:</label>
+  <input type="number" id="aat" placeholder="Out of 10" min="0" max="10">
+
+  <label for="quiz">Quiz:</label>
+  <input type="number" id="quiz" placeholder="Out of 30" min="0" max="30">
+
+  <label for="lab">Lab:</label>
+  <input type="number" id="lab" placeholder="Out of 20" min="0" max="20">
+
+  <div class="buttons">
+    <button id="backBtn" style="background:#007BFF; color:white;">Back</button>
+    <button id="nextBtn" style="background:#17a2b8; color:white;">Next Student</button>
+  </div>
+
+  <button id="submitBtn" class="submit-btn">Submit All Marks</button>
+  <button id="downloadBtn" class="submit-btn csv-btn">Download CSV File</button>
+</div>
+
+<script>
+  let students = [];
+  let currentIndex = 0;
+  let marksData = [];
+  const baseURL = window.location.origin;
+
+  function validateMarks(entry) {
+    const ranges = {
+      cia1: 50, cia2: 50, cia3: 50,
+      aat: 10, quiz: 30, lab: 20
+    };
+
+    for (const key in ranges) {
+      const value = parseFloat(entry[key]);
+      if (isNaN(value) || value < 0 || value > ranges[key]) {
+        alert(`Please enter ${key.toUpperCase()} within range 0 to ${ranges[key]}`);
+        return false;
+      }
+    }
+    return true;
+  }
+
+  function loadStudent() {
+    if (students.length === 0) return;
+    const student = students[currentIndex];
+    document.getElementById('student-info').innerText = `Name: ${student.name} | USN: ${student.usn}`;
+
+    const saved = marksData[currentIndex] || {};
+    document.getElementById('cia1').value = saved.cia1 || '';
+    document.getElementById('cia2').value = saved.cia2 || '';
+    document.getElementById('cia3').value = saved.cia3 || '';
+    document.getElementById('aat').value = saved.aat || '';
+    document.getElementById('quiz').value = saved.quiz || '';
+    document.getElementById('lab').value = saved.lab || '';
+  }
+
+  function saveCurrentMarks() {
+    if (!students[currentIndex]) return;
+
+    const entry = {
+      name: students[currentIndex].name,
+      usn: students[currentIndex].usn,
+      cia1: document.getElementById('cia1').value,
+      cia2: document.getElementById('cia2').value,
+      cia3: document.getElementById('cia3').value,
+      aat: document.getElementById('aat').value,
+      quiz: document.getElementById('quiz').value,
+      lab: document.getElementById('lab').value,
+    };
+
+    if (validateMarks(entry)) {
+      marksData[currentIndex] = entry;
+      return true;
+    }
+    return false;
+  }
+
+  document.getElementById('nextBtn').addEventListener('click', () => {
+    if (saveCurrentMarks()) {
+      if (currentIndex < students.length - 1) {
+        currentIndex++;
+        loadStudent();
+      } else {
+        alert('This is the last student.');
+      }
+    }
+  });
+
+  document.getElementById('backBtn').addEventListener('click', () => {
+    if (saveCurrentMarks()) {
+      if (currentIndex > 0) {
+        currentIndex--;
+        loadStudent();
+      } else {
+        alert('This is the first student.');
+      }
+    }
+  });
+
+  document.getElementById('submitBtn').addEventListener('click', () => {
+    if (saveCurrentMarks()) {
+      fetch('/api/save-marks', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(marksData)
+      })
+      .then(res => res.json())
+      .then(data => alert(data.message || 'Marks saved successfully.'))
+      .catch(err => {
+        console.error(err);
+        alert('Error saving marks.');
+      });
+    }
+  });
+
+  document.getElementById('downloadBtn').addEventListener('click', () => {
+    fetch(`${baseURL}/download`)
+      .then(response => {
+        if (!response.ok) throw new Error('Download failed.');
+        return response.blob();
+      })
+      .then(blob => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'marks.csv';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      })
+      .catch(error => {
+        console.error(error);
+        alert('Failed to download file.');
+      });
+  });
+
+  // Load students
+  fetch(`${baseURL}/api/students`)
+    .then(response => response.json())
+    .then(data => {
+      students = data;
+      if (students.length > 0) {
+        loadStudent();
+      } else {
+        document.getElementById('student-info').innerText = 'No students found.';
+      }
+    })
+    .catch(error => {
+      console.error('Error loading students:', error);
+      document.getElementById('student-info').innerText = 'Error loading students.';
+    });
+</script>
+
+</body>
+</html>

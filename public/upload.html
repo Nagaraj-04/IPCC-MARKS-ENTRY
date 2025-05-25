@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Upload CSV</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right top, #74ebd5, #acb6e5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      padding: 30px 40px;
+      border-radius: 20px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      width: 100%;
+      max-width: 420px;
+      color: #fff;
+      animation: fadeIn 0.5s ease-in-out;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 25px;
+      font-size: 24px;
+      font-weight: 600;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    input[type="file"] {
+      margin-bottom: 20px;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.9);
+      border: none;
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 15px;
+      color: #333;
+      cursor: pointer;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      font-weight: bold;
+      background: linear-gradient(to right, #4facfe, #00f2fe);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s ease-in-out;
+    }
+
+    button:hover {
+      background: linear-gradient(to right, #43e97b, #38f9d7);
+    }
+
+    .message {
+      margin-top: 15px;
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 14px;
+      text-align: center;
+    }
+
+    .success {
+      background-color: #d4edda;
+      color: #155724;
+    }
+
+    .error {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-15px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 25px 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Upload CSV File</h2>
+
+    <form id="csvForm">
+      <input type="file" id="csvFile" name="csvFile" accept=".csv" required />
+      <button type="submit">Upload</button>
+    </form>
+
+    <div id="messageContainer"></div>
+    <div id="nextButtonContainer" style="margin-top: 15px;"></div>
+  </div>
+
+  <script>
+    const form = document.getElementById('csvForm');
+    const messageDiv = document.getElementById('messageContainer');
+    const nextBtnContainer = document.getElementById('nextButtonContainer');
+
+    // Get the base URL from the current window location
+    const baseURL = window.location.origin;
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const formData = new FormData(form);
+
+      fetch(`${baseURL}/uploads`, {
+        method: 'POST',
+        body: formData
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.message) {
+          messageDiv.innerHTML = `<div class="message success">${data.message}</div>`;
+          nextBtnContainer.innerHTML = `<button onclick="goToMarks()">Next</button>`;
+        }
+      })
+      .catch(err => {
+        messageDiv.innerHTML = `<div class="message error">Error: ${err.message}</div>`;
+      });
+    });
+
+    function goToMarks() {
+      window.location.href = "enter-marks.html";
+    }
+  </script>
+</body>
+</html>
