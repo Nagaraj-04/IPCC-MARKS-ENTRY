@@ -4,8 +4,8 @@
   "description": "A web app to upload and edit IPCC subject marks using CSV files",
   "main": "index.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "nodemon server.js"
+    "start": "node index.js",
+    "dev": "nodemon index.js"
   },
   "author": "Your Name",
   "license": "ISC",
