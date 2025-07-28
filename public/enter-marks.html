@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <title>Enter Marks</title>
   <style>
-    * {
+     * {
       box-sizing: border-box;
     }
 
@@ -117,6 +117,11 @@
 </head>
 <body>
 
+
+  </style>
+</head>
+<body>
+
 <div class="container">
   <h2>Enter Marks</h2>
   <div id="student-info" class="student-info">Loading student...</div>
@@ -152,11 +157,6 @@
   let students = [];
   let currentIndex = 0;
   let marksData = [];
-<<<<<<< HEAD
-  const baseURL = window.location.origin;
-=======
->>>>>>> 8b603eb817f5da8eef7deb71c887be2f525e3af6
-
   function validateMarks(entry) {
     const ranges = {
       cia1: 50, cia2: 50, cia3: 50,
@@ -247,11 +247,7 @@
   });
 
   document.getElementById('downloadBtn').addEventListener('click', () => {
-<<<<<<< HEAD
-    fetch(`${baseURL}/download`)
-=======
     fetch('http://localhost:5000/download')
->>>>>>> 8b603eb817f5da8eef7deb71c887be2f525e3af6
       .then(response => {
         if (!response.ok) throw new Error('Download failed.');
         return response.blob();
@@ -272,11 +268,7 @@
   });
 
   // Load students
-<<<<<<< HEAD
-  fetch(`${baseURL}/api/students`)
-=======
   fetch('/api/students')
->>>>>>> 8b603eb817f5da8eef7deb71c887be2f525e3af6
     .then(response => response.json())
     .then(data => {
       students = data;

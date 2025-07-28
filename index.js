@@ -5,21 +5,16 @@ const fs = require('fs');
 const path = require('path');
 const csv = require('csv-parser');
 const { parse } = require('json2csv');
-<<<<<<< HEAD
 const os = require('os');
-=======
->>>>>>> 8b603eb817f5da8eef7deb71c887be2f525e3af6
 
 const app = express();
 const PORT = 5000;
 
-<<<<<<< HEAD
 // Get local IP address
 function getLocalIP() {
   const interfaces = os.networkInterfaces();
   for (const name of Object.keys(interfaces)) {
     for (const iface of interfaces[name]) {
-      // Skip internal (i.e. 127.0.0.1) and non-IPv4 addresses
       if (!iface.internal && iface.family === 'IPv4') {
         return iface.address;
       }
@@ -28,8 +23,6 @@ function getLocalIP() {
   return 'localhost';
 }
 
-=======
->>>>>>> 8b603eb817f5da8eef7deb71c887be2f525e3af6
 app.use(cors());
 app.use(express.static('public'));
 app.use(express.json());
@@ -99,7 +92,6 @@ app.post('/api/save-marks', (req, res) => {
   const studentsWithMarks = req.body;
 
   const updatedMarks = studentsWithMarks.map(student => {
-    // Convert values safely to numbers or default to 0
     const cia1 = +student.cia1 || 0;
     const cia2 = +student.cia2 || 0;
     const cia3 = +student.cia3 || 0;
@@ -107,22 +99,14 @@ app.post('/api/save-marks', (req, res) => {
     const quiz = +student.quiz || 0;
     const lab = +student.lab || 0;
 
-    // Reduced scores
     const cia1Reduced = Math.round((cia1 / 50) * 10);
     const cia2Reduced = Math.round((cia2 / 50) * 10);
     const cia3Reduced = Math.round((cia3 / 50) * 10);
     const quizReduced = Math.round((quiz / 30) * 10);
 
-    // Combined out of 50
     const combinedOutOf50 = cia1Reduced + cia2Reduced + cia3Reduced + aat + quizReduced;
-
-    // Final reduced out of 30
-    const finalReduced = Math.round((combinedOutOf50 / 50) * 30 * 100) / 100; // rounded to 2 decimals
-
-    // Total marks out of 50
+    const finalReduced = Math.round((combinedOutOf50 / 50) * 30 * 100) / 100;
     const totalMarksOutOf50 = finalReduced + lab;
-
-    // Grand total (whole number)
     const grandTotal = Math.round(totalMarksOutOf50);
 
     return {
@@ -179,22 +163,15 @@ app.get('/download', (req, res) => {
   }
 });
 
-
 // Catch-all route for undefined endpoints
 app.use((req, res) => {
   res.status(404).json({ message: 'Route not found.' });
 });
 
-
 // Start server
-<<<<<<< HEAD
 app.listen(PORT, '0.0.0.0', () => {
   const localIP = getLocalIP();
   console.log(`🚀 Server is running on:`);
   console.log(`- Local: http://localhost:${PORT}`);
   console.log(`- Network: http://${localIP}:${PORT}`);
-=======
-app.listen(PORT, () => {
-  console.log(`🚀 Server is running on http://localhost:${PORT}`);
->>>>>>> 8b603eb817f5da8eef7deb71c887be2f525e3af6
 });
