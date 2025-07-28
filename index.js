@@ -8,7 +8,7 @@ const { parse } = require('json2csv');
 const os = require('os');
 
 const app = express();
-const PORT = 5000;
+const PORT = process.env.PORT || 5000; // ✅ Render fix here
 
 // Get local IP address
 function getLocalIP() {
@@ -168,8 +168,8 @@ app.use((req, res) => {
   res.status(404).json({ message: 'Route not found.' });
 });
 
-// Start server
-app.listen(PORT, '0.0.0.0', () => {
+// ✅ Updated listener for Render
+app.listen(PORT, () => {
   const localIP = getLocalIP();
   console.log(`🚀 Server is running on:`);
   console.log(`- Local: http://localhost:${PORT}`);
