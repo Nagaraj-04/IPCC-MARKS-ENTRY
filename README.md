@@ -6,33 +6,35 @@ This web app allows IPCC faculty to upload student data via CSV, enter internal 
 
 ## 🔧 How to Run Locally
 
-1. **Clone the repository**
+    1. **Clone the repository**
 
-   ```bash
-   git clone https://github.com/Nagaraj-04/IPCC-MARKS-ENTRY.git
-   cd IPCC-MARKS-ENTRY
-2.**Install dependencies**
+         ```bash
+         git clone https://github.com/Nagaraj-04/IPCC-MARKS-ENTRY.git
+         cd IPCC-MARKS-ENTRY
 
-  npm install
+   2.**Install dependencies**
 
-3.**Start the server**
+           npm install
 
-  node index.js
-4. **Open frontend**
+   3.**Start the server**
 
-  Open upload.html in your browser to interact with the app.
+          node index.js
 
-5. **Live Demo**
+   4. **Open frontend**
 
-  https://ipcc-marks-entry-5.onrender.com
+        Open upload.html in your browser to interact with the app.
 
-Folder Structure
+   5. **Live Demo**
 
-IPCC-MARKS-ENTRY/
-├── public/
-│   └── upload.html
-├── uploads/
-│   └── student.csv (after upload)
-├── index.js
-└── README.md
+        https://ipcc-marks-entry-5.onrender.com
+
+   Folder Structure
+
+   IPCC-MARKS-ENTRY/
+   ├── public/
+   │   └── upload.html
+   ├── uploads/
+   │   └── student.csv (after upload)
+   ├── index.js
+   └── README.md
 
